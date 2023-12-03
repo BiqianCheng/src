@@ -107,31 +107,37 @@ def shuffle_time_series_data(dataloader, shuffled_num_batches):
             indices = np.random.permutation(3)
             shuffled_x[i] = x[i, indices]
             mapped_detectors = map_channels_to_detectirs(indices)
-            print(f"Sample {i} -Shuffled order: {mapped_detectors}")
+            # print(f"Sample {i} -Shuffled order: {mapped_detectors}")
+            if iters == 1 and mapped_detectors[2] != "Virgo":
+                list_idx = iters - 1
+                item_idx = i
+                print("list idx = ", list_idx)
+                print("item_idx = ", item_idx)
+                print(f"Sample {i} -Shuffled order: {mapped_detectors}")
         id_num = np.asarray(id_num)
         # shuffled_data.append([shuffled_x, y.numpy(), id_num])
         shuffled_data.append([shuffled_x, y.numpy(), id_num])
         if iters>shuffled_num_batches:
             break
-    return shuffled_data
+    return shuffled_data, list_idx, item_idx
 
-shuffle_train_data = shuffle_time_series_data(train_dataloader, 10)
-shuffle_test_data = shuffle_time_series_data(test_dataloader, 10)
+shuffle_train_data, list_idx, item_idx = shuffle_time_series_data(train_dataloader, 10)
+shuffle_test_data, list_idx, item_idx = shuffle_time_series_data(test_dataloader, 10)
 
 # shuffle_train_data = torch.from_numpy(np.array(shuffle_train_data))
 # shuffle_test_data = torch.from_numpy(np.array(shuffle_test_data))
 
 for info in shuffle_train_data:
-    train_x = info[0][9]
-    train_y = info[1][9]
-    train_id = info[2][9]
+    train_x = info[0][item_idx]
+    train_y = info[1][item_idx]
+    train_id = info[2][item_idx]
     break         
 
 for info in shuffle_test_data:
-    test_x = info[0][9]
-    test_y = info[1][9]
+    test_x = info[0][item_idx]
+    test_y = info[1][item_idx]
     test_batch = torch.from_numpy(info[0])
-    test_id = info[2][9]
+    test_id = info[2][item_idx]
     break      
 # for x, y, id_num in train_dataloader:
 #     train_x = x[9]

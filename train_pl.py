@@ -16,7 +16,7 @@ import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument("--seed", type=int, default=42, help="random seed")
 parser.add_argument("--use_gpu", type=int, default=1, help="device id of gpu to use")
-parser.add_argument("--model_name", type=str, default="ResNet", help="model name")
+parser.add_argument("--model_name", type=str, default="TCN", help="model name")
 parser.add_argument("--wandb_logging", type=str, default="disabled", help="wandb logging: disabled, online, dryrun")
 parser.add_argument("--DATA_DIR", type=str, default="/data/rgura001/ML4GWsearch/g2net-gravitational-wave-detection", help="path to data directory")
 
@@ -37,7 +37,7 @@ torch.cuda.empty_cache()
 print(f"Using torch version: {torch.__version__}")
 print(f"Found {torch.cuda.device_count()} devices.")
 import torch.nn.functional as F
-# from torchmetrics.classification import Accuracy, F1Score, AUROC
+from torchmetrics.classification import Accuracy, F1Score, AUROC
 from torchinfo import summary
 import wandb
 import pytorch_lightning as pl
@@ -52,7 +52,7 @@ print(f"Using pytorch_lightning version: {pl.__version__}")
 # import time
 
 from dataloaders.dataloader import get_dataloaders
-from models import get_model ## Add more models here
+from models.get_model import get_model ## Add more models here
 
 from clfutils4r.eval_classification import eval_classification as eval_model
 from utils import plot_training_metrics
