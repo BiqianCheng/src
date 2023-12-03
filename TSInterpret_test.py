@@ -29,9 +29,9 @@ else:
     config_dict['sample_size'] = config_dict['total_datapoints']
     config_dict['num_batches'] = config_dict['total_datapoints']//config_dict['batch_size']
 
-########################################
-#load the pre-trained model parameters #
-########################################
+#################################################################
+# Restoring the model to the training state from the checkpoint #
+#################################################################
 RESULTS_DIR = "/data/bchen158/ML4GW/ML4GWsearch/src/results/train_20231023/222238"
 checkpoint_path = RESULTS_DIR + "/checkpoints/epoch=29-step=32820.ckpt"
 
@@ -91,30 +91,74 @@ train_dataloader, \
 # print("# idx for TN:")
 # print(true_pred_idx)
 
-for x, y, id_num in train_dataloader:
-    train_x = x[9]
-    train_y = y[9]
-    train_id = id_num[9]
-    break
-    # print(x.shape)
-    # break
+# Fucntion to map the channel to corresponding detector names
+def map_channels_to_detectirs(indices):
+    detectors = ["LIGO Hanford", "LIGO Livingston", "Virgo"]
+    return [detectors[i] for i in indices]
 
-for x, y, id_num in test_dataloader:
-    test_x = x[9]
-    test_y = y[9]
-    test_batch = x
-    test_id = id_num[9]
-    break
-    # print(x.shape)
-    # break
+# Function to shuffle time-series data for each sample
+def shuffle_time_series_data(dataloader, shuffled_num_batches):
+    shuffled_data = []
+    iters = 0
+    for x, y, id_num in dataloader:
+        iters += 1
+        shuffled_x = np.zeros_like(x)
+        for i in range(x.shape[0]):
+            indices = np.random.permutation(3)
+            shuffled_x[i] = x[i, indices]
+            mapped_detectors = map_channels_to_detectirs(indices)
+            print(f"Sample {i} -Shuffled order: {mapped_detectors}")
+        id_num = np.asarray(id_num)
+        # shuffled_data.append([shuffled_x, y.numpy(), id_num])
+        shuffled_data.append([shuffled_x, y.numpy(), id_num])
+        if iters>shuffled_num_batches:
+            break
+    return shuffled_data
 
+shuffle_train_data = shuffle_time_series_data(train_dataloader, 10)
+shuffle_test_data = shuffle_time_series_data(test_dataloader, 10)
+
+# shuffle_train_data = torch.from_numpy(np.array(shuffle_train_data))
+# shuffle_test_data = torch.from_numpy(np.array(shuffle_test_data))
+
+for info in shuffle_train_data:
+    train_x = info[0][9]
+    train_y = info[1][9]
+    train_id = info[2][9]
+    break         
+
+for info in shuffle_test_data:
+    test_x = info[0][9]
+    test_y = info[1][9]
+    test_batch = torch.from_numpy(info[0])
+    test_id = info[2][9]
+    break      
+# for x, y, id_num in train_dataloader:
+#     train_x = x[9]
+#     train_y = y[9]
+#     train_id = id_num[9]
+#     break
+#     # print(x.shape)
+#     # break
+
+# for x, y, id_num in test_dataloader:
+#     test_x = x[9]
+#     test_y = y[9]
+#     test_batch = x
+#     test_id = id_num[9]
+#     break
+#     # print(x.shape)
+#     # break
+
+# print("test_batch = ", test_batch.shape)
+# print("Type of test batch = ", type(test_batch))
 logits = model(test_batch)
 test_preds = torch.argmax(logits, dim=1)
 
-train_x = train_x.numpy()
-train_y = train_y.numpy()
-test_x = test_x.numpy()
-test_y = test_y.numpy()
+# train_x = train_x.numpy()
+# train_y = train_y.numpy()
+# test_x = test_x.numpy()
+# test_y = test_y.numpy()
 
 from TSInterpret.InterpretabilityModels.Saliency.TSR import TSR
 int_mod = TSR(model, train_x.shape[-2], train_x.shape[-1], method='IG', mode='time')
