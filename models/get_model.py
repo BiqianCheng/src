@@ -123,7 +123,8 @@ def get_model(config={}):
         model = MLP(
                         config['input_channels'], 
                         config['n_classes'],
-                        layers = layers,
+                        config['seq_len'],
+                        layers = config['layers'],
                         # ps = config['paddings'],
                         fc_dropout = config['fc_dropout']
                     )
