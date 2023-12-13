@@ -16,7 +16,7 @@ import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument("--seed", type=int, default=42, help="random seed")
 parser.add_argument("--use_gpu", type=int, default=1, help="device id of gpu to use")
-parser.add_argument("--model_name", type=str, default="TCN", help="model name")
+parser.add_argument("--model_name", type=str, default="MLP", help="model name")
 parser.add_argument("--wandb_logging", type=str, default="disabled", help="wandb logging: disabled, online, dryrun")
 parser.add_argument("--DATA_DIR", type=str, default="/data/rgura001/ML4GWsearch/g2net-gravitational-wave-detection", help="path to data directory")
 
@@ -318,7 +318,6 @@ def main(config=None, logger=None):
     trainer.fit(model, train_dataloader, val_dataloader)
     elapsed_time = datetime.datetime.now()-tic
     print(f"Elapsed time: {elapsed_time}")
-
 
     num_epochs_trained = len(metrics_callback.train_loss)
     train_avgTimePerEpoch = elapsed_time / num_epochs_trained

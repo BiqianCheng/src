@@ -36,9 +36,9 @@ RESULTS_DIR = "/data/bchen158/ML4GW/ML4GWsearch/src/results/train_20231023/22223
 checkpoint_path = RESULTS_DIR + "/checkpoints/epoch=29-step=32820.ckpt"
 
 from GWDetectionLightningModule import GWDetectionLightningModule
-model = GWDetectionLightningModule(config=config_dict)
+model = GWDetectionLightningModule(config=config_dict).load_from_checkpoint(checkpoint_path, config=config_dict)
 # ??? whether the model checkpoint is correctly loaded in
-model.load_from_checkpoint(checkpoint_path, config=config_dict)
+# model.load_from_checkpoint(checkpoint_path, config=config_dict)
 model.eval()
 from pprint import pprint
 print("# the model configuration: ")
@@ -121,50 +121,54 @@ def shuffle_time_series_data(dataloader, shuffled_num_batches):
             break
     return shuffled_data, list_idx, item_idx
 
-shuffle_train_data, list_idx, item_idx = shuffle_time_series_data(train_dataloader, 10)
-shuffle_test_data, list_idx, item_idx = shuffle_time_series_data(test_dataloader, 10)
+# shuffle_train_data, list_idx, item_idx = shuffle_time_series_data(train_dataloader, 10)
+# shuffle_test_data, list_idx, item_idx = shuffle_time_series_data(test_dataloader, 10)
 
-# shuffle_train_data = torch.from_numpy(np.array(shuffle_train_data))
-# shuffle_test_data = torch.from_numpy(np.array(shuffle_test_data))
+# for info in shuffle_train_data:
+#     train_x = info[0][item_idx]
+#     train_y = info[1][item_idx]
+#     train_id = info[2][item_idx]
+#     break         
 
-for info in shuffle_train_data:
-    train_x = info[0][item_idx]
-    train_y = info[1][item_idx]
-    train_id = info[2][item_idx]
-    break         
+# for info in shuffle_test_data:
+#     test_x = info[0][item_idx]
+#     test_y = info[1][item_idx]
+#     test_batch = torch.from_numpy(info[0])
+#     test_id = info[2][item_idx]
+#     break      
 
-for info in shuffle_test_data:
-    test_x = info[0][item_idx]
-    test_y = info[1][item_idx]
-    test_batch = torch.from_numpy(info[0])
-    test_id = info[2][item_idx]
-    break      
-# for x, y, id_num in train_dataloader:
-#     train_x = x[9]
-#     train_y = y[9]
-#     train_id = id_num[9]
-#     break
-#     # print(x.shape)
-#     # break
+for x, y, id_num in train_dataloader:
+    train_x = x[57]
+    train_y = y[57]
+    train_id = id_num[57]
+    break
+    # print(x.shape)
+    # break
 
-# for x, y, id_num in test_dataloader:
-#     test_x = x[9]
-#     test_y = y[9]
-#     test_batch = x
-#     test_id = id_num[9]
-#     break
-#     # print(x.shape)
-#     # break
+for x, y, id_num in test_dataloader:
+    test_x = x[57]
+    test_y = y[57]
+    test_batch = x
+    test_id = id_num
+    break
+    # print(x.shape)
+    # break
 
 # print("test_batch = ", test_batch.shape)
 # print("Type of test batch = ", type(test_batch))
+device = torch.device("cpu")
+model.to(device)
 logits = model(test_batch)
 test_preds = torch.argmax(logits, dim=1)
+print("test_batch: \n", test_batch.numpy().shape)
+print("test prediction is : ")
+print(test_preds)
+print(test_id)
 
-# train_x = train_x.numpy()
-# train_y = train_y.numpy()
-# test_x = test_x.numpy()
-# test_y = test_y.numpy()
+train_x = train_x.numpy()
+train_y = train_y.numpy()
+test_x = test_x.numpy()
+test_y = test_y.numpy()
 
 from TSInterpret.InterpretabilityModels.Saliency.TSR import TSR
 int_mod = TSR(model, train_x.shape[-2], train_x.shape[-1], method='IG', mode='time')

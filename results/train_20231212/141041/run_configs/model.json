@@ -1,0 +1,14 @@
+{
+    "num_hidden_units": 50,
+    "levels": 8,
+    "layers": [
+        500,
+        500,
+        500
+    ],
+    "seq_len": 10,
+    "kernel_size": 5,
+    "conv_dropout": 0,
+    "fc_dropout": 0,
+    "model_name": "MLP"
+}

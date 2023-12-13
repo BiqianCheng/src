@@ -1,0 +1,25 @@
+{
+    "dataset_name": "g2net-gravitational-wave-detection",
+    "ifos": [
+        "LIGO Hanford",
+        "LIGO Livingston",
+        "Virgo"
+    ],
+    "total_datapoints": 560000,
+    "input_channels": 3,
+    "seq_len": 4096,
+    "n_classes": 2,
+    "z_norm": false,
+    "highpass": true,
+    "whiten": false,
+    "scale": false,
+    "bandpass": false,
+    "epochs": 100,
+    "batch_size": 128,
+    "num_batches": 4375,
+    "optimizer": "sgd",
+    "learning_rate": 0.1,
+    "lr_scheduler": "step",
+    "stop_early": true,
+    "accumulate_grad_batches": 3
+}

@@ -1,0 +1,14 @@
+{
+    "layers": [
+        128,
+        256,
+        128
+    ],
+    "kernel_sizes": [
+        7,
+        5,
+        3
+    ],
+    "batch_norm": true,
+    "model_name": "FCNPlus"
+}

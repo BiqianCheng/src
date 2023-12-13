@@ -1,0 +1,5 @@
+{
+    "stop_early__monitor": "val_loss",
+    "stop_early__mode": "min",
+    "stop_early__patience": 5
+}

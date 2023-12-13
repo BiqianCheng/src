@@ -1,0 +1,6 @@
+{
+    "num_hidden_units": 25,
+    "levels": 8,
+    "kernel_size": 7,
+    "model_name": "TCN"
+}
